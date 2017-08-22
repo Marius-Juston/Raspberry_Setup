@@ -4,5 +4,5 @@ from cx_Freeze import setup, Executable
 
 setup(name="raspiSetup",
       version='0.1',
-      description='setsup the raspberry pi',
-      executables=[Executable("RaspberryPiSetup.py")], requires=['cx_Freeze'])
+      description='sets up the raspberry pi',
+      executables=[Executable("RaspberryPiSetup.py")])

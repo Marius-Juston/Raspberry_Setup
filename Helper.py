@@ -6,12 +6,11 @@ import zipfile
 from pathlib import Path
 
 import requests
-
-
 import win32com.shell.shell as shell
 
-def create_open_file(file):
-    return open(file, ('a' if os.path.exists(file) else 'w') + 'r+')
+
+def create_open_file(file, mode):
+    return open(file, mode)
 
 def download_file(url, directory, file_name):
     os.makedirs(directory, exist_ok=True)

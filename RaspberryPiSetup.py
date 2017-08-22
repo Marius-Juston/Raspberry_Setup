@@ -18,7 +18,7 @@ def main():
     ip_address = None
 
     while ip_address is None:
-        ip_address = OpenCVSetup.raspberry_pi_ip_addresse()
+        ip_address = OpenCVSetup.raspberry_pi_ip_address()
 
     print("The raspberry was found on the network. The ip address is:", ip_address)
 

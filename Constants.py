@@ -21,5 +21,7 @@ plink_url = 'https://the.earth.li/~sgtatham/putty/latest/w64/plink.exe'
 
 camera_enable_config_line = 'start_x='
 
+sd_card_min_size = 15000000000
+
 path_variable_name = "Path"
 delete_files_at_end=True

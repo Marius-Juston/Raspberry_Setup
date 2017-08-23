@@ -1,0 +1,40 @@
+Method #1
+
+The easiest way would be to access your network router's administration page. It will have information about any other devices on the network, including IP address.
+
+Method #2
+
+If you know the computer's network name you can ping it in the Terminal. It will return the computer's IP address.
+
+Method #3
+
+If you don't know the computer's network name, there's another trick you can do using ping. Find your IP address and your subnet mask. Both should be visible in the Network preference pane of System Preferences. Line up your IP address and your subnet mask, and replace any 0 values in the subnet mask with 255 in the same relative position of the IP address. For example, if you have the following IP address and subnet mask, respectively:
+
+192.168.1.151
+
+255.255.255.0
+
+The 0 is in the last field of the subnet mask, so you replace the last field of the IP address with 255 and ping it: ping 192.168.1.255
+
+You should get a response with the IP address of any device on the network capable of responding to pings.
+
+Method #4
+
+Last trick is to use the terminal command arp -a. This will show the IP and MAC address of all devices on the network that it knows about.
+
+Last two tricks courtesy of this Macworld article.
+
+#####################################################################################################################################
+
+get ip adress of computer
+get subnet mask of computer 
+get the index of the 0 in the subnet mask and replace the index in the ipadress with 255
+EX: ip adress = 10.108.52.50
+    subnet mask = 255.255.255.0
+    
+    broadcast ip = 10.108.52.255
+ping the broadcast ip adress
+arp -a
+
+iterate the list of ipadress and do nbtstat -A ip_adress
+find the ip adress with the raspberry pi hostname

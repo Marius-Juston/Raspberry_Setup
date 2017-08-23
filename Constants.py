@@ -33,3 +33,7 @@ state_network_regex = "State" + network_information_extraction_regex + end_line
 ssid_name_network_regex = "SSID" + network_information_extraction_regex + end_line
 profile_name_network_regex = "Profile" + network_information_extraction_regex + " " + end_line
 security_key_network_regex = "Key Content\s+:\s+(.+)" + end_line * 2 + "\w"
+
+raspberry_pi_ip_address = "192.168.1.200"
+raspberry_pi_netmask = "255.255.255.0"
+raspberry_pi_router_ip_address_regex = "([\d\.]{4,15})\\r\\n\\r\\n"

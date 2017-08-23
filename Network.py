@@ -6,6 +6,14 @@ import Terminal
 
 # TODO make it so that it returns a dictionary will all network settings
 
+def get_router_ip_address():
+    ip_config_output = Terminal.run_command("ipconfig")
+
+    regex_search = re.search(Constants.raspberry_pi_router_ip_address_regex, ip_config_output).group(1)
+
+    return regex_search
+
+
 def get_current_network():
     profile_info = Terminal.run_command("netsh wlan show interfaces")
 
@@ -18,7 +26,9 @@ def get_current_network():
 
         profile_password = get_network_profile_info(profile_name)
 
-        return ssid, profile_password
+        router_ip_adress = get_router_ip_address()
+
+        return ssid, profile_password, router_ip_adress
 
     return None
 
@@ -29,9 +39,3 @@ def get_network_profile_info(profile_name):
     regex_search = re.search(Constants.security_key_network_regex, profile_info).group(1)
 
     return regex_search
-
-
-def find_hostname(hostname):
-    # TODO loik in network devices and look for the devices ip adress and host name
-
-    pass

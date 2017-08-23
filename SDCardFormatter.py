@@ -37,11 +37,10 @@ def enable_camera(sd_card_location):
     file_write.close()
 
 
-def setup_wifi(sd_card_location):
+def setup_wifi(sd_card_location, network_info):
     file_directory = sd_card_location + b'wpa_supplicant.conf'
     file_write = Helper.create_open_file(file_directory, "w+")
 
-    network_info = Network.get_current_network()
 
     lines = ["network={\n",
              '\tssid="' + network_info[0] + '"\n',
@@ -51,11 +50,22 @@ def setup_wifi(sd_card_location):
              ]
 
     file_write.writelines(lines)
+    file_write.close()
 
 
 def eject_SD_card_prompt():
     Terminal.run_command("RunDll32.exe shell32.dll,Control_RunDLL hotplug.dll")
 
+
+def set_static_ip(sd_card_location, network_info):
+    file_directory = sd_card_location + 'cmdline.txt'
+    file_write = Helper.create_open_file(file_directory, "a+" if os.path.exists(file_directory) else "w+")
+
+    file_write.write(" ip=" + Constants.raspberry_pi_ip_address +
+                     "::" + network_info[2] +
+                     ":" + Constants.raspberry_pi_netmask +
+                     ":rpi:eth0:off")
+    file_write.close()
 
 def setup_sd_card():
     sd_cards = get_SD_card_location()
@@ -87,8 +97,13 @@ def setup_sd_card():
     print("Enabling camera on raspberry pi")
     enable_camera(sd_card_location)
 
+    network_info = Network.get_current_network()
+
     print("Setting up wifi on raspberry pi. The raspberry pi will use your network and network password to connect")
-    setup_wifi(sd_card_location)
+    setup_wifi(sd_card_location, network_info)
+
+    print("Setting static ip address of the Raspberry Pi to ", Constants.raspberry_pi_ip_address)
+    set_static_ip(sd_card_location, network_info)
 
     print("Openning prompt to eject SD card")
     eject_SD_card_prompt()

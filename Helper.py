@@ -12,6 +12,10 @@ import win32com.shell.shell as shell
 def create_open_file(file, mode):
     return open(file, mode)
 
+
+def decode(byte_object, encoding="utf-8"):
+    return byte_object.decode(encoding)
+
 def download_file(url, directory, file_name):
     os.makedirs(directory, exist_ok=True)
 
@@ -20,11 +24,11 @@ def download_file(url, directory, file_name):
 
 
 def run_program(program_command):
-    os.system(program_command)
+    return os.system(program_command)
 
 
 def run_program_as_admin(program, program_parameters):
-        shell.ShellExecuteEx(lpVerb='runas', lpFile=program, lpParameters=program_parameters)
+    return shell.ShellExecuteEx(lpVerb='runas', lpFile=program, lpParameters=program_parameters)
     # pass
 
 

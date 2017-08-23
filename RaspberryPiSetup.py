@@ -8,7 +8,6 @@ import SDCardFormatter
 
 def main():
     SDCardFormatter.setup_sd_card()
-    # import RaspberryISO
 
     print("Please remove the SD card now and plug it in the raspberry py. When finished press enter")
     input()

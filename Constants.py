@@ -8,7 +8,6 @@ debian_jessie_with_raspberry_desktop = "http://downloads.raspberrypi.org/rpd_x86
 debian_jessie_with_raspberry_desktop_name = "Raspberry_pi.iso"
 debian_jessie_with_raspberry_desktop_download_directory = "Raspberry_ISO/"
 
-
 raspberry_pi_network_name = "raspiberrypi"
 raspberry_pi_user = 'pi'
 raspibery_pi_password = "raspberry"
@@ -24,4 +23,13 @@ camera_enable_config_line = 'start_x='
 sd_card_min_size = 15000000000
 
 path_variable_name = "Path"
-delete_files_at_end=True
+delete_files_at_end = True
+
+network_information_extraction_regex = "\s+:\s+([A-Za-z0-9-_ ]+)"
+
+end_line = '\r\n'
+
+state_network_regex = "State" + network_information_extraction_regex + end_line
+ssid_name_network_regex = "SSID" + network_information_extraction_regex + end_line
+profile_name_network_regex = "Profile" + network_information_extraction_regex + " " + end_line
+security_key_network_regex = "Key Content\s+:\s+(.+)" + end_line * 2 + "\w"

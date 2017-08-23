@@ -4,6 +4,8 @@ from pathlib import Path
 
 import Constants
 import Helper
+import Network
+import Terminal
 
 
 def enable_ssh(sd_card_location):
@@ -11,47 +13,87 @@ def enable_ssh(sd_card_location):
 
 
 def enable_camera(sd_card_location):
-    # TODO make it so that it replace adn finds the config.txt file
-
     file_directory = sd_card_location + b'config.txt'
 
-    if not Path(file_directory.decode("utf-8")).exists():
-        file = Helper.create_open_file(file_directory, "wr+")
+    lines = []
 
-    else:
-        file = Helper.create_open_file(file_directory, "a+")
+    if Path(Helper.decode(file_directory)).exists():
+        with Helper.create_open_file(file_directory, "r") as file:
+            lines = file.readlines()
 
-    lines = file.readlines()
-
-    changed = False
+    file_write = Helper.create_open_file(file_directory, "w+")
 
     if len(lines) != 0:
-        for l in lines:
-            if Constants.camera_enable_config_line in l:
-                l.replace(Constants.camera_enable_config_line + "0", Constants.camera_enable_config_line + "1")
-                changed = True
+        for i in range(len(lines)):
+            if Constants.camera_enable_config_line + "0" in lines[i]:
+                lines[i] = lines[i].replace(Constants.camera_enable_config_line + "0",
+                                            Constants.camera_enable_config_line + "1")
 
-    elif len(lines) == 0 or not changed:
+    elif len(lines) == 0:
         lines.append(Constants.camera_enable_config_line + "1")
-        changed = True
 
-    if changed:
-        file.writelines(lines)
+    file_write.writelines(lines)
 
-    file.close()
+    file_write.close()
+
+
+def setup_wifi(sd_card_location):
+    file_directory = sd_card_location + b'wpa_supplicant.conf'
+    file_write = Helper.create_open_file(file_directory, "w+")
+
+    network_info = Network.get_current_network()
+
+    lines = ["network={\n",
+             '\tssid="' + network_info[0] + '"\n',
+             '\tpsk="' + network_info[1] + '"\n',
+             '\tkey_mgmt=WPA-PSK\n',
+             "}"
+             ]
+
+    file_write.writelines(lines)
+
+
+def eject_SD_card_prompt():
+    Terminal.run_command("RunDll32.exe shell32.dll,Control_RunDLL hotplug.dll")
+
 
 def setup_sd_card():
-    sd_card_location = get_SD_card_location()
+    sd_cards = get_SD_card_location()
 
+    print("Locating avaliable SD card in system")
+    sd_card_location = look_for_sd_card(sd_cards)
+
+    print("Using the SD card at ", Helper.decode(sd_card_location))
+
+    print("Downloading etcher")
     etcher_location = download_etcher()
-    Helper.add_to_environmental_variable(Constants.path_variable_name, etcher_location)
-    image_location = download_raspberry_iso()
-    #
-    run_etcher(sd_card_location, image_location)
+    print("Finished downloading etcher at", etcher_location)
 
+    print("Adding etcher to environmental of the program")
+    Helper.add_to_environmental_variable(Constants.path_variable_name, etcher_location)
+
+    print("Downloading ISO image file")
+    image_location = download_raspberry_iso()
+    print("Finished downloading ISO image file at ", image_location)
+
+    print("Running etcher with drive as ", Helper.decode(sd_card_location) + " and using the ISO image file at",
+          image_location)
+    run_etcher(Helper.decode(sd_card_location), image_location)
+    print("Finished running etcher")
+
+    print("Enabling SSH on raspberry pi")
     enable_ssh(sd_card_location)
+
+    print("Enabling camera on raspberry pi")
     enable_camera(sd_card_location)
 
+    print("Setting up wifi on raspberry pi. The raspberry pi will use your network and network password to connect")
+    setup_wifi(sd_card_location)
+
+    print("Openning prompt to eject SD card")
+    eject_SD_card_prompt()
+
+    print("Finished setting up Raspberry Pi SD card")
 
 def download_etcher():
     location = Constants.download_directory + Constants.etcher_download_directory
@@ -87,7 +129,26 @@ def run_etcher(drive, iso_location):
     Helper.run_program_as_admin("etcher", "-d " + drive + " " + iso_location)
 
 
-def get_SD_card_location(already=False):
+def look_for_sd_card(devices, already=False):
+    if len(devices) < 2:
+        if not already:
+            print("There are no available SD card (check that SD card is " + str(
+                Constants.sd_card_min_size / 1000000000) + "GB of higher) this will keep looking for one every 0.5 "
+                                                           "seconds")
+        time.sleep(.5)
+        return look_for_sd_card(get_SD_card_location(), already=True)
+
+
+    elif len(devices) >= 2:
+        print("SD card found")
+
+        if len(devices) > 2:
+            print("There are more than 1 SD card that meet the requirements. Picking the first one....")
+
+        return devices[1] + b"/"
+
+
+def get_SD_card_location():
     import subprocess
     df = subprocess.check_output(
         'wmic logicaldisk '
@@ -99,19 +160,4 @@ def get_SD_card_location(already=False):
                                                      'get name')
 
     devices = df.replace(b"\r\r\n", b"").split()
-
-    if len(devices) < 2:
-        if not already:
-            print("There are no available SD card (check that SD card is " + str(
-                Constants.sd_card_min_size / 1000000000) + " GB of higher) this will keep looking for one every 0.5 seconds")
-        time.sleep(.5)
-        return get_SD_card_location(True)
-
-
-    elif len(devices) >= 2:
-        print("SD card found")
-
-        if len(devices) > 2:
-            print("There are more than 1 SD card that meet the requirements. Picking the first one....")
-
-        return devices[1] + b"/"
+    return devices

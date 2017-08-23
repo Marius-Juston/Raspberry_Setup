@@ -23,3 +23,18 @@ Method #4
 Last trick is to use the terminal command arp -a. This will show the IP and MAC address of all devices on the network that it knows about.
 
 Last two tricks courtesy of this Macworld article.
+
+#####################################################################################################################################
+
+get ip adress of computer
+get subnet mask of computer 
+get the index of the 0 in the subnet mask and replace the index in the ipadress with 255
+EX: ip adress = 10.108.52.50
+    subnet mask = 255.255.255.0
+    
+    broadcast ip = 10.108.52.255
+ping the broadcast ip adress
+arp -a
+
+iterate the list of ipadress and do nbtstat -A ip_adress
+find the ip adress with the raspberry pi hostname

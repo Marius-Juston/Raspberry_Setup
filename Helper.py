@@ -16,6 +16,7 @@ def create_open_file(file, mode):
 def decode(byte_object, encoding="utf-8"):
     return byte_object.decode(encoding)
 
+
 def download_file(url, directory, file_name):
     os.makedirs(directory, exist_ok=True)
 
@@ -34,7 +35,6 @@ def run_program_as_admin(program, program_parameters):
 
 def remove_file(file):
     os.remove(file)
-
 
 
 def extract_zip(zip_file_url, extract_folder):

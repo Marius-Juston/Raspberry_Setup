@@ -1,4 +1,5 @@
 import os
+import subprocess
 import time
 from pathlib import Path
 
@@ -41,7 +42,6 @@ def setup_wifi(sd_card_location, network_info):
     file_directory = sd_card_location + b'wpa_supplicant.conf'
     file_write = Helper.create_open_file(file_directory, "w+")
 
-
     lines = ["network={\n",
              '\tssid="' + network_info[0] + '"\n',
              '\tpsk="' + network_info[1] + '"\n',
@@ -67,14 +67,8 @@ def set_static_ip(sd_card_location, network_info):
                      ":rpi:eth0:off")
     file_write.close()
 
+
 def setup_sd_card():
-    sd_cards = get_SD_card_location()
-
-    print("Locating avaliable SD card in system")
-    sd_card_location = look_for_sd_card(sd_cards)
-
-    print("Using the SD card at ", Helper.decode(sd_card_location))
-
     print("Downloading etcher")
     etcher_location = download_etcher()
     print("Finished downloading etcher at", etcher_location)
@@ -85,6 +79,11 @@ def setup_sd_card():
     print("Downloading ISO image file")
     image_location = download_raspberry_iso()
     print("Finished downloading ISO image file at ", image_location)
+
+    print("Locating available SD card in system however USB device will also be seen as SD cards")
+    sd_card_location = look_for_sd_card()
+
+    print("Using the SD card at ", Helper.decode(sd_card_location))
 
     print("Running etcher with drive as ", Helper.decode(sd_card_location) + " and using the ISO image file at",
           image_location)
@@ -102,13 +101,14 @@ def setup_sd_card():
     print("Setting up wifi on raspberry pi. The raspberry pi will use your network and network password to connect")
     setup_wifi(sd_card_location, network_info)
 
-    print("Setting static ip address of the Raspberry Pi to ", Constants.raspberry_pi_ip_address)
-    set_static_ip(sd_card_location, network_info)
+    # print("Setting static ip address of the Raspberry Pi to ", Constants.raspberry_pi_ip_address)
+    # set_static_ip(sd_card_location, network_info)
 
-    print("Openning prompt to eject SD card")
+    print("Opening prompt to eject SD card")
     eject_SD_card_prompt()
 
     print("Finished setting up Raspberry Pi SD card")
+
 
 def download_etcher():
     location = Constants.download_directory + Constants.etcher_download_directory
@@ -144,35 +144,41 @@ def run_etcher(drive, iso_location):
     Helper.run_program_as_admin("etcher", "-d " + drive + " " + iso_location)
 
 
-def look_for_sd_card(devices, already=False):
-    if len(devices) < 2:
-        if not already:
+# TODO make it so that only sd card are seen not USB and SD cards
+def look_for_sd_card():
+    devices = get_SD_card_location()
+
+    previous = None
+
+    while len(devices) != 1:
+        if len(devices) == 1:
+            print("SD card found")
+            break
+
+        if len(devices) == 0 and previous is not False:
             print("There are no available SD card (check that SD card is " + str(
-                Constants.sd_card_min_size / 1000000000) + "GB of higher) this will keep looking for one every 0.5 "
-                                                           "seconds")
+                Constants.sd_card_min_size / 1000000000) + "GB or higher). The program will continuously keep looking.")
+            previous = False
+        elif len(devices) > 1 and previous:
+            print("There are more than one available device that fit the requirements. Please remove all the other "
+                  "devices: " + str(*devices))
+            previous = False
+
         time.sleep(.5)
-        return look_for_sd_card(get_SD_card_location(), already=True)
+        devices = get_SD_card_location()
 
-
-    elif len(devices) >= 2:
-        print("SD card found")
-
-        if len(devices) > 2:
-            print("There are more than 1 SD card that meet the requirements. Picking the first one....")
-
-        return devices[1] + b"/"
+    return devices[0]
 
 
 def get_SD_card_location():
-    import subprocess
-    df = subprocess.check_output(
-        'wmic logicaldisk '
-        'where "'
-        'size>=' + str(Constants.sd_card_min_size) + ' and '
-                                                     'drivetype=2 and '
-                                                     'filesystem=\'FAT32\' and '
-                                                     'description=\'Removable Disk\'" '
-                                                     'get name')
+    p = subprocess.Popen(Constants.command,
+                         stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         shell=False
+                         )
 
-    devices = df.replace(b"\r\r\n", b"").split()
+    stdout, stderr = p.communicate()
+
+    devices = stdout.replace(b"\r\r\n", b"").replace(b"Name:", b"").split()
     return devices

@@ -8,11 +8,11 @@ debian_jessie_with_raspberry_desktop = "http://downloads.raspberrypi.org/rpd_x86
 debian_jessie_with_raspberry_desktop_name = "Raspberry_pi.iso"
 debian_jessie_with_raspberry_desktop_download_directory = "Raspberry_ISO/"
 
-raspberry_pi_network_name = "raspiberrypi"
+raspberry_pi_network_name = "raspberrypi"
 raspberry_pi_user = 'pi'
-raspibery_pi_password = "raspberry"
+raspberry_pi_password = "raspberry"
 
-opencv_instruction_file = './commands.txt'
+opencv_instruction_file = 'commands.txt'
 
 plink_save_download_directory = 'PLink/'
 plink_name = 'PLink.exe'
@@ -21,6 +21,10 @@ plink_url = 'https://the.earth.li/~sgtatham/putty/latest/w64/plink.exe'
 camera_enable_config_line = 'start_x='
 
 sd_card_min_size = 15000000000
+command = 'wmic logicaldisk where "size>=' + str(sd_card_min_size) + ' and drivetype=2 and ' \
+                                                                     'filesystem=\'FAT32\' and ' \
+                                                                     'description=\'Removable Disk\'" ' \
+                                                                     'get name'
 
 path_variable_name = "Path"
 delete_files_at_end = True

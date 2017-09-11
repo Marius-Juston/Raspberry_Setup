@@ -1,15 +1,15 @@
 sudo raspi-config --expand-rootfs
 sudo reboot
-sudo apt-get purge wolfram-engine
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install build-essential cmake pkg-config
-sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev
-sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
-sudo apt-get install libxvidcore-dev libx264-dev
-sudo apt-get install libgtk2.0-dev
-sudo apt-get install libatlas-base-dev gfortran
-sudo apt-get install python2.7-dev python3-dev
+sudo apt-get purge wolfram-engine -y
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install build-essential cmake pkg-config -y
+sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev -y
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev -y
+sudo apt-get install libxvidcore-dev libx264-dev -y
+sudo apt-get install libgtk2.0-dev -y
+sudo apt-get install libatlas-base-dev gfortran -y
+sudo apt-get install python2.7-dev python3-dev -y
 cd ~
 wget -O opencv.zip https://github.com/Itseez/opencv/archive/3.3.0.zip
 unzip opencv.zip

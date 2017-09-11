@@ -1,4 +1,7 @@
 import re
+import time
+from os import system as system_call  # Execute a shell command
+from platform import system as system_name  # Returns the system/OS name
 
 import Constants
 import Terminal
@@ -39,3 +42,21 @@ def get_network_profile_info(profile_name):
     regex_search = re.search(Constants.security_key_network_regex, profile_info).group(1)
 
     return regex_search
+
+
+def ping(host):
+    """
+    Returns True if host (str) responds to a ping request.
+    Remember that some hosts may not respond to a ping request even if the host name is valid.
+    """
+
+    # Ping parameters as function of OS
+    parameters = "-n 1" if system_name().lower() == "windows" else "-c 1"
+
+    # Pinging
+    return system_call("ping " + parameters + " " + host) == 0
+
+
+def wait_for_ping(ip_address):
+    while not ping(ip_address):
+        time.sleep(0.5)

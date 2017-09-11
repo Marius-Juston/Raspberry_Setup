@@ -126,6 +126,7 @@ def remove_useless_files():
     Helper.remove_file(Constants.download_directory + Constants.etcher_window64_setup_name)
 
 
+# TODO make it so that iot looks for the latest version
 def download_raspberry_iso():
     location = Constants.download_directory + Constants.debian_jessie_with_raspberry_desktop_download_directory
 
@@ -180,5 +181,5 @@ def get_SD_card_location():
 
     stdout, stderr = p.communicate()
 
-    devices = stdout.replace(b"\r\r\n", b"").replace(b"Name:", b"").split()
+    devices = stdout.replace(b"\r\r\n", b"").replace(b"Name", b"").split()
     return devices

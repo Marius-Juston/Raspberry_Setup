@@ -1,1 +1,0 @@
-"Python36-32\python.exe" RaspberryPiSetup.py

@@ -1,8 +1,21 @@
 from cx_Freeze import setup, Executable
 
-# TODO save all the files to a exe using cx_freeze. in command prompt write python setup.py build
+base = None
 
-setup(name="RaspberrySetup",
-      version='0.1',
-      description='sets up the raspberry pi',
-      executables=[Executable("RaspberryPiSetup.py")], requires=['requests', 'cx_Freeze'])
+executables = [Executable("RaspberryPiSetup.py", base=base)]
+
+packages = ["idna"]
+options = {
+    'build_exe': {
+
+        'packages': packages,
+    },
+}
+
+setup(
+    name="RaspberrySetup",
+    options=options,
+    version="0.1",
+    description='sets up the raspberry pi',
+    executables=executables, requires=['cx_Freeze']
+)
